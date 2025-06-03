@@ -1,8 +1,9 @@
+// db/dbLoad.js
 const mongoose = require("mongoose");
 require("dotenv").config();
+const bcrypt = require("bcrypt");
 
 const models = require("../modelData/models.js");
-
 const User = require("../db/userModel.js");
 const Photo = require("../db/photoModel.js");
 const SchemaInfo = require("../db/schemaInfo.js");
@@ -11,47 +12,67 @@ const versionString = "1.0";
 
 async function dbLoad() {
   try {
-    await mongoose.connect(process.env.DB_URL);
+    await mongoose.connect(process.env.DB_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log("Successfully connected to MongoDB Atlas!");
   } catch (error) {
-    console.log("Unable connecting to MongoDB Atlas!");
+    console.error("Unable to connect to MongoDB Atlas!", error);
+    return;
   }
 
-  await User.deleteMany({});
-  await Photo.deleteMany({});
-  await SchemaInfo.deleteMany({});
+  try {
+    await User.deleteMany({});
+    await Photo.deleteMany({});
+    await SchemaInfo.deleteMany({});
+    console.log("Cleared existing data in users, photos, and schemaInfo collections");
+  } catch (error) {
+    console.error("Error clearing collections:", error);
+    return;
+  }
 
   const userModels = models.userListModel();
+  console.log("Loaded user models:", userModels.length, "users");
   const mapFakeId2RealId = {};
   for (const user of userModels) {
-    userObj = new User({
-      first: user.first_name,
+    console.log("Attempting to create user:", user.login_name);
+    const userObj = new User({
+      first_name: user.first_name,
       last_name: user.last_name,
       location: user.location,
       description: user.description,
       occupation: user.occupation,
+      login_name: user.login_name,
+      password: user.password,
     });
     try {
       await userObj.save();
       mapFakeId2RealId[user._id] = userObj._id;
       user.objectID = userObj._id;
       console.log(
-        "Adding user:",
+        "Added user:",
         user.first_name + " " + user.last_name,
-        " with ID ",
+        "with ID",
         user.objectID,
+        "and login_name",
+        user.login_name
       );
     } catch (error) {
-      console.error("Error create user", error);
+      console.error("Error creating user", user.login_name, ":", error);
     }
   }
+
   const photoModels = [];
   const userIDs = Object.keys(mapFakeId2RealId);
+  console.log("User IDs:", userIDs);
   userIDs.forEach(function (id) {
     photoModels.push(...models.photoOfUserModel(id));
   });
+  console.log("Loaded photo models:", photoModels.length, "photos");
   for (const photo of photoModels) {
-    photoObj = await Photo.create({
+    console.log("Attempting to create photo:", photo.file_name);
+    const photoObj = await Photo.create({
       file_name: photo.file_name,
       date_time: photo.date_time,
       user_id: mapFakeId2RealId[photo.user_id],
@@ -63,39 +84,45 @@ async function dbLoad() {
           {
             comment: comment.comment,
             date_time: comment.date_time,
-            user_id: comment.user.objectID,
+            user_id: mapFakeId2RealId[comment.user._id],
           },
         ]);
         console.log(
           "Adding comment of length %d by user %s to photo %s",
           comment.comment.length,
-          comment.user.objectID,
-          photo.file_name,
+          mapFakeId2RealId[comment.user._id],
+          photo.file_name
         );
       });
     }
     try {
       await photoObj.save();
       console.log(
-        "Adding photo:",
+        "Added photo:",
         photo.file_name,
-        " of user ID ",
-        photoObj.user_id,
+        "of user ID",
+        photoObj.user_id
       );
     } catch (error) {
-      console.error("Error create photo", error);
+      console.error("Error creating photo", photo.file_name, ":", error);
     }
   }
 
   try {
-    schemaInfo = await SchemaInfo.create({
+    const schemaInfo = await SchemaInfo.create({
       version: versionString,
     });
-    console.log("SchemaInfo object created with version ", schemaInfo.version);
+    console.log("SchemaInfo object created with version", schemaInfo.version);
   } catch (error) {
-    console.error("Error create schemaInfo", reportError);
+    console.error("Error creating schemaInfo:", error);
   }
-  mongoose.disconnect();
+
+  try {
+    await mongoose.disconnect();
+    console.log("Disconnected from MongoDB Atlas");
+  } catch (error) {
+    console.error("Error disconnecting from MongoDB:", error);
+  }
 }
 
 dbLoad();

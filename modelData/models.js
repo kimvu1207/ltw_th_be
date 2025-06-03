@@ -1,47 +1,5 @@
-/**
- * Model data for Project 5 - the photo sharing site.
- * This module returns an object called models with the following
- * functions:
- *
- * models.userListModel() - A function that returns the list of users on
- * the system. The list is returned as an array of objects containing:
- *   _id (string)         - The ID of the user.
- *   first_name (string)  - The first name of the user.
- *   last_name (string)   - The last name of the user.
- *   location (string)    - The location of the user.
- *   description (string) - A brief user description.
- *   occupation (string)  - The occupation of the user.
- *
- * models.userModel() - A function that returns the info of the specified
- * user. Called with an user ID (id), the function returns n object containing:
- *   _id (string)         - The ID of the user.
- *   first_name (string)  - The first name of the user.
- *   last_name (string)   - The last name of the user.
- *   location (string)    - The location of the user.
- *   description (string) - A brief user description.
- *   occupation (string)  - The occupation of the user.
- *
- * models.photoOfUserModel() - A function that returns the photos belong to
- * the specified user. Called with an user ID (id), the function returns an
- * object containing:
- *   _id (string)         - The ID of the photo
- *   date_time (date)     - The date and time the picture was taken in ISO
- *                          format.
- *   file_name (string)   - The file name in the image directory of the picture.
- *   user_id (string)     - The user id of the picture's owner.
- *   comments ([objects]) - An array of Comments with the properties:
- *       _id (string)       - The ID of the comment.
- *       date_time (date)   - The date the comment was made in ISO format.
- *       comment (string)   - The text of the comment.
- *       user: (object)     - The user who made the comment.
- *       photo_id: (string) - The ID of the photo the comment belongs to.
- *
- * models.schemaModel() - A function that returns the test info from the
- * fake schema. The function returns an object containing:
- *   _id (string)           - The ID of the schema.
- *   __v (number)           - The version number.
- *   load_date_time (date)  - The date the schema was made in ISO format.
- */
+// modelData/models.js
+const bcrypt = require("bcrypt");
 
 const schemaInfo = {
   load_date_time: "Fri Apr 29 2016 01:45:15 GMT-0700 (PDT)",
@@ -49,8 +7,7 @@ const schemaInfo = {
   _id: "57231f1b30e4351f4e9f4bf6",
 };
 
-// Create init users.
-
+// Create init users
 const im = {
   _id: "57231f1a30e4351f4e9f4bd7",
   first_name: "Ian",
@@ -58,6 +15,8 @@ const im = {
   location: "Austin, TX",
   description: "Should've stayed in the car.",
   occupation: "Mathematician",
+  login_name: "ian.malcolm",
+  password: bcrypt.hashSync("password123", 10),
 };
 const er = {
   _id: "57231f1a30e4351f4e9f4bd8",
@@ -66,6 +25,8 @@ const er = {
   location: "Nostromo",
   description: "Lvl 6 rating. Pilot.",
   occupation: "Warrant Officer",
+  login_name: "ellen.ripley",
+  password: bcrypt.hashSync("password123", 10),
 };
 const pt = {
   _id: "57231f1a30e4351f4e9f4bd9",
@@ -78,6 +39,8 @@ const pt = {
     "until the stars are all alight... Mist and shadow, cloud and shade, " +
     "all shall fade... all... shall... fade... ",
   occupation: "Thain",
+  login_name: "peregrin.took",
+  password: bcrypt.hashSync("password123", 10),
 };
 const rk = {
   _id: "57231f1a30e4351f4e9f4bda",
@@ -86,6 +49,8 @@ const rk = {
   location: "D'Qar",
   description: "Excited to be here!",
   occupation: "Rebel",
+  login_name: "rey.kenobi",
+  password: bcrypt.hashSync("password123", 10),
 };
 const al = {
   _id: "57231f1a30e4351f4e9f4bdb",
@@ -94,6 +59,8 @@ const al = {
   location: "Pawnee, IN",
   description: "Witch",
   occupation: "Animal Control",
+  login_name: "april.ludgate",
+  password: bcrypt.hashSync("password123", 10),
 };
 const jo = {
   _id: "57231f1a30e4351f4e9f4bdc",
@@ -102,11 +69,13 @@ const jo = {
   location: "Stanford, CA",
   description: "<i>CS142!</i>",
   occupation: "Professor",
+  login_name: "john.ousterhout",
+  password: bcrypt.hashSync("password123", 10),
 };
 
 const users = [im, er, pt, rk, al, jo];
 
-// Create initial photos.
+// Create initial photos
 const photo1 = {
   _id: "57231f1a30e4351f4e9f4bdd",
   date_time: "2012-08-30 10:44:23",
@@ -195,7 +164,7 @@ const photos = [
   photo12,
 ];
 
-// Create initial comments.
+// Create initial comments
 const comment1 = {
   _id: "57231f1a30e4351f4e9f4be9",
   date_time: "2012-09-02 14:01:00",
@@ -205,7 +174,6 @@ const comment1 = {
   user: jo,
   photo_id: photo1._id,
 };
-
 const comment2 = {
   _id: "57231f1a30e4351f4e9f4bea",
   date_time: "2013-09-06 14:02:00",
@@ -216,7 +184,6 @@ const comment2 = {
   user: jo,
   photo_id: photo1._id,
 };
-
 const comment3 = {
   _id: "57231f1a30e4351f4e9f4beb",
   date_time: "2013-09-08 14:06:00",
@@ -226,7 +193,6 @@ const comment3 = {
   user: jo,
   photo_id: photo1._id,
 };
-
 const comment4 = {
   _id: "57231f1a30e4351f4e9f4bec",
   date_time: "2009-09-14 18:07:00",
@@ -239,7 +205,6 @@ const comment4 = {
   user: im,
   photo_id: photo2._id,
 };
-
 const comment5 = {
   _id: "57231f1a30e4351f4e9f4bed",
   date_time: "2013-11-28 17:45:13",
@@ -248,7 +213,6 @@ const comment5 = {
   user: er,
   photo_id: photo5._id,
 };
-
 const comment6 = {
   _id: "57231f1a30e4351f4e9f4bee",
   date_time: "2013-11-02 14:07:00",
@@ -258,7 +222,6 @@ const comment6 = {
   user: er,
   photo_id: photo7._id,
 };
-
 const comment7 = {
   _id: "57231f1a30e4351f4e9f4bef",
   date_time: "2013-11-02 14:09:15",
@@ -268,7 +231,6 @@ const comment7 = {
   user: rk,
   photo_id: photo7._id,
 };
-
 const comment8 = {
   _id: "57231f1a30e4351f4e9f4bf0",
   date_time: "2010-09-06 13:59:33",
@@ -276,7 +238,6 @@ const comment8 = {
   user: rk,
   photo_id: photo8._id,
 };
-
 const comment9 = {
   _id: "57231f1a30e4351f4e9f4bf1",
   date_time: "2008-10-16 18:04:55",
@@ -287,7 +248,6 @@ const comment9 = {
   user: rk,
   photo_id: photo12._id,
 };
-
 const comment10 = {
   _id: "57231f1a30e4351f4e9f4bf2",
   date_time: "2013-12-04 13:12:00",
@@ -295,7 +255,6 @@ const comment10 = {
   user: pt,
   photo_id: photo10._id,
 };
-
 const comment11 = {
   _id: "57231f1a30e4351f4e9f4bf3",
   date_time: "2013-09-04 10:14:32",
@@ -305,7 +264,6 @@ const comment11 = {
   user: al,
   photo_id: photo11._id,
 };
-
 const comment12 = {
   _id: "57231f1a30e4351f4e9f4bf4",
   date_time: "2016-01-04 2:00:01",
@@ -313,7 +271,6 @@ const comment12 = {
   user: al,
   photo_id: photo9._id,
 };
-
 const comment13 = {
   _id: "57231f1a30e4351f4e9f4bf5",
   date_time: "2016-01-04 2:04:01",
@@ -341,8 +298,7 @@ const comments = [
 comments.forEach(function (comment) {
   const photo = photos.filter(function (photo) {
     return photo._id === comment.photo_id;
-  })[0]; // Only one match. Return the content of the match inside the array
-
+  })[0];
   if (!photo.comments) {
     photo.comments = [];
   }

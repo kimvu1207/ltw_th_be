@@ -1,19 +1,9 @@
+// db/schemaInfo.js
 const mongoose = require("mongoose");
 
-/**
- * Create a Mongoose Schema.
- */
-const schemaInfo = new mongoose.Schema({
+const schemaInfoSchema = new mongoose.Schema({
   version: String,
-  load_date_time: { type: Date, default: Date.now },
+  load_date_time: String,
 });
 
-/**
- * Create a Mongoose Model.
- */
-const SchemaInfo = mongoose.model("SchemaInfo", schemaInfo);
-
-/**
- * Make this available to our application.
- */
-module.exports = SchemaInfo;
+module.exports = mongoose.model("SchemaInfo", schemaInfoSchema);
